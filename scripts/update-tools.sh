@@ -29,15 +29,20 @@ update_nix_file() {
   local url="$3"
   local hash="$4"
 
-  python3 - <<PY
+  VERSION="$version" URL="$url" HASH="$hash" FILE="$file" python3 - <<'PY'
 from pathlib import Path
+import os
 import re
 
-path = Path("$file")
+path = Path(os.environ["FILE"])
+version = os.environ["VERSION"]
+url = os.environ["URL"]
+hash_ = os.environ["HASH"]
+
 text = path.read_text()
 text, n1 = re.subn(r'version = "[^"]+";', f'version = "{version}";', text, count=1)
 text, n2 = re.subn(r'url = "[^"]+";', f'url = "{url}";', text, count=1)
-text, n3 = re.subn(r'hash = "sha256-[^"]+";', f'hash = "{hash}";', text, count=1)
+text, n3 = re.subn(r'hash = "sha256-[^"]+";', f'hash = "{hash_}";', text, count=1)
 
 if n1 == 0 or n2 == 0 or n3 == 0:
     raise SystemExit(f"update failed for {path}: version/url/hash not found")
@@ -105,15 +110,21 @@ update_oracle() {
   local lock_hash
   lock_hash=$(prefetch_hash "$lock_url")
 
-  python3 - <<PY
+  VERSION="$version" URL="$asset" HASH="$asset_hash" LOCK_HASH="$lock_hash" FILE="$nix_file" python3 - <<'PY'
 from pathlib import Path
+import os
 import re
 
-path = Path("$nix_file")
+path = Path(os.environ["FILE"])
+version = os.environ["VERSION"]
+url = os.environ["URL"]
+hash_ = os.environ["HASH"]
+lock_hash = os.environ["LOCK_HASH"]
+
 text = path.read_text()
 text, n1 = re.subn(r'version = "[^"]+";', f'version = "{version}";', text, count=1)
-text, n2 = re.subn(r'url = "[^"]+";', f'url = "{asset}";', text, count=1)
-text, n3 = re.subn(r'hash = "sha256-[^"]+";', f'hash = "{asset_hash}";', text, count=1)
+text, n2 = re.subn(r'url = "[^"]+";', f'url = "{url}";', text, count=1)
+text, n3 = re.subn(r'hash = "sha256-[^"]+";', f'hash = "{hash_}";', text, count=1)
 text, n4 = re.subn(r'lockSrc = fetchFromGitHub \{[^}]*?hash = "sha256-[^"]+";',
                    lambda m: re.sub(r'hash = "sha256-[^"]+";', f'hash = "{lock_hash}";', m.group(0)),
                    text, count=1, flags=re.S)
@@ -134,11 +145,13 @@ PY
   if echo "$build_log" | grep -q "got: sha256-"; then
     pnpm_hash=$(echo "$build_log" | sed -n 's/.*got: \(sha256-[A-Za-z0-9+/=]*\).*/\1/p' | head -1)
     if [[ -n "$pnpm_hash" ]]; then
-      python3 - <<PY
+      PNPM_HASH="$pnpm_hash" FILE="$nix_file" python3 - <<'PY'
 from pathlib import Path
+import os
 import re
 
-path = Path("$nix_file")
+path = Path(os.environ["FILE"])
+pnpm_hash = os.environ["PNPM_HASH"]
 text = path.read_text()
 text, n = re.subn(r'pnpmDeps.*?hash = "sha256-[^"]+";',
                   lambda m: re.sub(r'hash = "sha256-[^"]+";', f'hash = "{pnpm_hash}";', m.group(0)),
@@ -167,4 +180,3 @@ update_tool poltergeist "steipete/poltergeist" "poltergeist-macos-universal-v[0-
 update_tool sag "steipete/sag" "sag_[0-9.]+_darwin_universal\\.tar\\.gz" "$repo_root/nix/pkgs/sag.nix"
 update_tool imsg "steipete/imsg" "imsg-macos\\.zip" "$repo_root/nix/pkgs/imsg.nix"
 update_oracle
-
