@@ -16,7 +16,7 @@
 
       clawdbotPlugin = {
         name = "gogcli";
-        skills = [ ./skills/gogcli ];
+        skills = [ ./skills/gog ];
         packages = [ gogcli ];
         needs = {
           stateDirs = [];
