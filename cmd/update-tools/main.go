@@ -55,6 +55,12 @@ func updateTool(tool Tool) error {
 
 func updateOracle(repoRoot string) error {
 	log.Printf("[update-tools] oracle")
+	oracleFile := filepath.Join(repoRoot, "nix", "pkgs", "oracle.nix")
+	orig, err := os.ReadFile(oracleFile)
+	if err != nil {
+		return err
+	}
+
 	rel, err := internal.LatestRelease("steipete/oracle")
 	if err != nil {
 		return err
@@ -80,7 +86,6 @@ func updateOracle(repoRoot string) error {
 		return err
 	}
 
-	oracleFile := filepath.Join(repoRoot, "nix", "pkgs", "oracle.nix")
 	if err := internal.ReplaceOnce(oracleFile, regexp.MustCompile(`version = "[^"]+";`), fmt.Sprintf(`version = "%s";`, version)); err != nil {
 		return err
 	}
@@ -104,10 +109,12 @@ func updateOracle(repoRoot string) error {
 	}
 
 	log.Printf("[update-tools] oracle: deriving pnpm hash")
-	logText, _ := internal.NixBuildOracle()
+	logText, buildErr := internal.NixBuildOracle()
 	pnpmHash := internal.ExtractGotHash(logText)
 	if pnpmHash == "" {
-		return fmt.Errorf("oracle pnpm hash not found in build output")
+		_ = os.WriteFile(oracleFile, orig, 0644)
+		log.Printf("[update-tools] oracle pnpm hash not found; restored original file (build err: %v)", buildErr)
+		return nil
 	}
 	if err := internal.ReplaceOnceFunc(oracleFile, pnpmRe, func(s string) string {
 		return regexp.MustCompile(`hash = "sha256-[^"]+";`).ReplaceAllString(s, fmt.Sprintf(`hash = "%s";`, pnpmHash))
