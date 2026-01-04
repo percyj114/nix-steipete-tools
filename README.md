@@ -1,46 +1,97 @@
-# nix-stepiete-tools
+# nix-steipete-tools
 
-Nix packaging for Peter Steinberger's tools, with per-tool clawdbot plugins.
+> Core tools for clawdbot. Batteries included. Always fresh.
 
-Darwin-only for now (aarch64-darwin).
+Nix packaging for [Peter Steinberger's](https://github.com/steipete) tools, with per-tool clawdbot plugins. Part of the [nix-clawdbot](https://github.com/clawdbot/nix-clawdbot) ecosystem.
 
-## Usage (clawdbot plugins)
+Darwin/aarch64 only (Apple Silicon Macs).
 
-Each tool is a subflake under `tools/<tool>` and exposes `clawdbotPlugin`.
+## What's included
 
-Example (summarize):
+| Tool | What it does |
+|------|--------------|
+| **summarize** | AI-powered text/URL summarization |
+| **gogcli** | GOG Galaxy game library management |
+| **camsnap** | Grab snapshots from IP cameras (Hikvision, RTSP, etc.) |
+| **sonoscli** | Control Sonos speakers |
+| **bird** | Bluesky client |
+| **peekaboo** | macOS screen/window capture with metadata |
+| **poltergeist** | macOS UI automation |
+| **sag** | Text-to-speech via ElevenLabs |
+| **imsg** | Send/receive iMessages |
+| **oracle** | AI coding assistant |
+
+## Usage (as clawdbot plugins)
+
+Each tool is a subflake under `tools/<tool>/` exporting `clawdbotPlugin`. Point your nix-clawdbot config at the tool you want:
 
 ```nix
-plugins = [
-  { source = "github:clawdbot/nix-stepiete-tools?dir=tools/summarize"; }
+programs.clawdbot.plugins = [
+  { source = "github:clawdbot/nix-steipete-tools?dir=tools/camsnap"; }
+  { source = "github:clawdbot/nix-steipete-tools?dir=tools/peekaboo"; }
+  { source = "github:clawdbot/nix-steipete-tools?dir=tools/summarize"; }
 ];
 ```
 
-## Skills sync (latest main)
+Each plugin bundles:
+- The tool binary (on PATH)
+- A skill (SKILL.md) so your bot knows how to use it
+- Any required state dirs / env declarations
 
-To keep skills aligned with `clawdbot/clawdbot` without pinning:
+## Usage (packages only)
+
+If you just want the binaries without the plugin wrapper:
+
+```nix
+inputs.nix-steipete-tools.url = "github:clawdbot/nix-steipete-tools";
+
+# Then use:
+inputs.nix-steipete-tools.packages.aarch64-darwin.camsnap
+inputs.nix-steipete-tools.packages.aarch64-darwin.peekaboo
+# etc.
+```
+
+## Skills syncing
+
+Skills are vendored from [clawdbot/clawdbot](https://github.com/clawdbot/clawdbot) main branch. No pinning - we track latest.
 
 ```bash
 scripts/sync-skills.sh
 ```
 
-This pulls `main` (sparse checkout) and only updates files when contents change.
+Pulls latest main via sparse checkout, only updates files when contents actually change.
 
-## Tool updates (latest releases)
+## Tool updates
 
-To bump tool versions + hashes from upstream GitHub releases:
+Tools track upstream GitHub releases directly (not Homebrew).
 
 ```bash
 scripts/update-tools.sh
 ```
 
-This script uses GitHub releases directly (not Homebrew) and only edits files when
-values change. Oracle is auto-updated by deriving its pnpm hash via a build mismatch.
+Fetches latest release versions/URLs/hashes and updates the Nix expressions. Oracle uses pnpm and auto-derives its hash via build mismatch.
 
-## Packages (root flake)
+## CI
 
-You can also import packages directly from the root flake:
+| Workflow | Schedule | What it does |
+|----------|----------|--------------|
+| **sync-skills** | Every 30 min | Pulls latest skills from clawdbot main |
+| **update-tools** | Every 10 min | Checks for new tool releases |
+| **Garnix** | On push | Builds all packages via `checks.*` |
 
-```nix
-inputs.nix-stepiete-tools.packages.${pkgs.system}.summarize
-```
+Automated PRs keep everything fresh without manual intervention.
+
+## Why this exists
+
+These tools are essential for a capable clawdbot instance - screen capture, camera access, TTS, messaging. Packaging them as Nix flakes with clawdbot plugin metadata means:
+
+- **Reproducible**: Pinned versions, no Homebrew drift
+- **Declarative**: Add a plugin, `home-manager switch`, done
+- **Fresh**: CI keeps tools and skills at latest automatically
+- **Integrated**: Skills teach your bot how to use each tool
+
+## License
+
+Tools are packaged as-is from upstream. See individual tool repos for their licenses.
+
+Nix packaging: MIT
