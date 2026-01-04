@@ -22,6 +22,7 @@
           peekaboo = pkgs.callPackage ./nix/pkgs/peekaboo.nix {};
           poltergeist = pkgs.callPackage ./nix/pkgs/poltergeist.nix {};
           sag = pkgs.callPackage ./nix/pkgs/sag.nix {};
+          imsg = pkgs.callPackage ./nix/pkgs/imsg.nix {};
         }
       );
 
@@ -34,6 +35,7 @@
         peekaboo = self.packages.${system}.peekaboo;
         poltergeist = self.packages.${system}.poltergeist;
         sag = self.packages.${system}.sag;
+        imsg = self.packages.${system}.imsg;
       });
     };
 }
