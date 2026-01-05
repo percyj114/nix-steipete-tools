@@ -2,11 +2,11 @@
 
 stdenv.mkDerivation {
   pname = "bird";
-  version = "0.5.1";
+  version = "0.6.0";
 
   src = fetchurl {
-    url = "https://github.com/steipete/bird/releases/download/v0.5.1/bird-macos-universal-v0.5.1.tar.gz";
-    hash = "sha256-fpWxvUG8nZu9VYSNvkzZ5y5nlLZK6O97a5UWDPgNkj0=";
+    url = "https://github.com/steipete/bird/releases/download/v0.6.0/bird-macos-universal-v0.6.0.tar.gz";
+    hash = "sha256-HdvyNBkq96RUr7vNtDHvqbKv57w/SVLV3AWiaiMUOdo=";
   };
 
   dontConfigure = true;
