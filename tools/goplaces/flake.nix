@@ -21,7 +21,7 @@
             packages = [ goplaces ];
             needs = {
               stateDirs = [];
-              requiredEnv = [ "GOOGLE_PLACES_API_KEY" ];
+              requiredEnv = [];
             };
           };
     in {
