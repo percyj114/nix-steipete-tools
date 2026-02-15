@@ -1,31 +1,60 @@
-{ lib, buildGoModule, fetchFromGitHub }:
+{ lib, stdenv, fetchurl }:
 
-buildGoModule rec {
-  pname = "goplaces";
-  version = "0.2.2-dev";
-
-  src = fetchFromGitHub {
-    owner = "joshp123";
-    repo = "goplaces";
-    rev = "a71fe3de986a78607d923f397113d7eb1babc111";
-    hash = "sha256-Lufp9+fwcoluNZR9iDYoIJ1yu3sM/8Q/EOkAlq5VLdk=";
+let
+  sources = {
+    "aarch64-darwin" = {
+      url = "https://github.com/steipete/goplaces/releases/download/v0.3.0/goplaces_0.3.0_darwin_arm64.tar.gz";
+      hash = "sha256-FAhLzN7CbMghXNTLPOyaRHJjMuUt+LlDoWRV0zQSpmU=";
+    };
+    "x86_64-darwin" = {
+      url = "https://github.com/steipete/goplaces/releases/download/v0.3.0/goplaces_0.3.0_darwin_amd64.tar.gz";
+      hash = "sha256-Rue66IenX9MX69nAwDGDMSN5+2LzzeZ8nE7N2eCvR1E=";
+    };
+    "x86_64-linux" = {
+      url = "https://github.com/steipete/goplaces/releases/download/v0.3.0/goplaces_0.3.0_linux_amd64.tar.gz";
+      hash = "sha256-z6eNTZo2K7wsPT/3d3Fg+1pZlN5+hSGwBIG3LUBTsec=";
+    };
+    "aarch64-linux" = {
+      url = "https://github.com/steipete/goplaces/releases/download/v0.3.0/goplaces_0.3.0_linux_arm64.tar.gz";
+      hash = "sha256-IhwA/xN7SqdoNd7WB+RtOKHsmGyo+62IZDBEDWfevRs=";
+    };
   };
-
-  subPackages = [ "cmd/goplaces" ];
-
-  ldflags = [
-    "-s"
-    "-w"
-    "-X github.com/steipete/goplaces/internal/cli.Version=${version}"
-  ];
-
-  vendorHash = "sha256-OFTjLtKwYSy4tM+D12mqI28M73YJdG4DyqPkXS7ZKUg=";
 
   meta = with lib; {
-    description = "Modern Go client + CLI for the Google Places API";
-    homepage = "https://github.com/joshp123/goplaces";
+    description = "Modern Go client + CLI for the Google Places API (New)";
+    homepage = "https://github.com/steipete/goplaces";
     license = licenses.mit;
-    platforms = platforms.darwin ++ platforms.linux;
+    platforms = builtins.attrNames sources;
     mainProgram = "goplaces";
   };
+
+in
+stdenv.mkDerivation {
+  pname = "goplaces";
+  version = "0.3.0";
+
+  src = fetchurl sources.${stdenv.hostPlatform.system};
+
+  dontConfigure = true;
+  dontBuild = true;
+
+  unpackPhase = ''
+    tar -xzf "$src"
+  '';
+
+  installPhase = ''
+    runHook preInstall
+    mkdir -p "$out/bin" "$out/share/doc/goplaces"
+    cp $(find . -type f -name goplaces | head -1) "$out/bin/goplaces"
+    chmod 0755 "$out/bin/goplaces"
+    if [ -f LICENSE ]; then
+      cp LICENSE "$out/share/doc/goplaces/"
+    fi
+    if [ -f README.md ]; then
+      cp README.md "$out/share/doc/goplaces/"
+    fi
+    runHook postInstall
+  '';
+
+  inherit meta;
 }
