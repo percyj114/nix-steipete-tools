@@ -88,7 +88,10 @@ func NixBuildSummarizeSystem(system string) (string, error) {
 }
 
 func ExtractGotHash(log string) string {
-	re := regexp.MustCompile(`got:\s*(sha256-[A-Za-z0-9+/=]+)`)
+	// Nix typically prints something like:
+	//   got:    sha256-....
+	// but sometimes wraps/indents. Keep this forgiving.
+	re := regexp.MustCompile(`(?i)got:\s*"?(sha256-[A-Za-z0-9+/=]+)"?`)
 	for _, line := range strings.Split(log, "\n") {
 		match := re.FindStringSubmatch(line)
 		if len(match) > 1 {

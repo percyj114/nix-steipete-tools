@@ -200,7 +200,15 @@ func updateOracle(repoRoot string) error {
 	logText, buildErr := internal.NixBuildOracle()
 	pnpmHash := internal.ExtractGotHash(logText)
 	if pnpmHash == "" {
+		// Restore original file so we don't leave a broken placeholder hash behind.
 		_ = os.WriteFile(oracleFile, orig, 0644)
+		// Surface some context in CI logs. This is usually a hash-mismatch line we failed to parse.
+		lines := strings.Split(logText, "\n")
+		start := 0
+		if len(lines) > 200 {
+			start = len(lines) - 200
+		}
+		log.Printf("[update-tools] oracle build output (last %d lines):\n%s", len(lines)-start, strings.Join(lines[start:], "\n"))
 		return fmt.Errorf("oracle pnpm hash not found (build err: %v)", buildErr)
 	}
 	if err := internal.ReplaceOnceFunc(oracleFile, pnpmRe, func(s string) string {
