@@ -314,6 +314,8 @@ func main() {
 	}
 
 	if err := updateOracle(repoRoot); err != nil {
-		log.Fatalf("update oracle failed: %v", err)
+		// Oracle releases occasionally ship with an out-of-date pnpm-lock.yaml.
+		// In that case, we keep the previously pinned version and still update other tools.
+		log.Printf("[update-tools] skipping oracle update: %v", err)
 	}
 }
