@@ -13,10 +13,11 @@ import (
 )
 
 type Tool struct {
-	Name    string
-	Repo    string
-	Assets  []AssetSpec
-	NixFile string
+	Name     string
+	Repo     string
+	Assets   []AssetSpec
+	NixFile  string
+	Optional bool
 }
 
 type AssetSpec struct {
@@ -248,8 +249,9 @@ func main() {
 			NixFile: filepath.Join(repoRoot, "nix", "pkgs", "sonoscli.nix"),
 		},
 		{
-			Name: "bird",
-			Repo: "steipete/bird",
+			Name:     "bird",
+			Repo:     "steipete/bird",
+			Optional: true, // repo got nuked; keep packaging pinned, but don't fail the updater
 			Assets: []AssetSpec{
 				{System: "aarch64-darwin", Regex: regexp.MustCompile(`bird-macos-universal-v[0-9.]+\.tar\.gz`)},
 			},
@@ -295,6 +297,10 @@ func main() {
 	}
 	for _, tool := range tools {
 		if err := updateTool(tool); err != nil {
+			if tool.Optional {
+				log.Printf("[update-tools] skipping optional tool %s: %v", tool.Name, err)
+				continue
+			}
 			log.Fatalf("update %s failed: %v", tool.Name, err)
 		}
 	}

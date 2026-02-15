@@ -19,15 +19,16 @@ type PrefetchGitHubResult struct {
 
 func PrefetchHash(url string) (string, error) {
 	cmd := exec.Command("nix", "store", "prefetch-file", "--json", url)
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	cmd.Stderr = &out
+	var stdout bytes.Buffer
+	var stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
 	if err := cmd.Run(); err != nil {
-		return "", fmt.Errorf("prefetch failed: %v: %s", err, out.String())
+		return "", fmt.Errorf("prefetch failed: %v\nstdout:\n%s\nstderr:\n%s", err, stdout.String(), stderr.String())
 	}
 	var res PrefetchResult
-	if err := json.Unmarshal(out.Bytes(), &res); err != nil {
-		return "", err
+	if err := json.Unmarshal(stdout.Bytes(), &res); err != nil {
+		return "", fmt.Errorf("prefetch json parse failed: %v\nstdout:\n%s\nstderr:\n%s", err, stdout.String(), stderr.String())
 	}
 	if res.Hash == "" {
 		return "", fmt.Errorf("empty hash for %s", url)
@@ -87,7 +88,7 @@ func NixBuildSummarizeSystem(system string) (string, error) {
 }
 
 func ExtractGotHash(log string) string {
-	re := regexp.MustCompile(`got:\s*(sha256-[A-Za-z0-9+/=]+)`) 
+	re := regexp.MustCompile(`got:\s*(sha256-[A-Za-z0-9+/=]+)`)
 	for _, line := range strings.Split(log, "\n") {
 		match := re.FindStringSubmatch(line)
 		if len(match) > 1 {
