@@ -295,7 +295,7 @@ func main() {
 			Name: "camsnap",
 			Repo: "steipete/camsnap",
 			Assets: []AssetSpec{
-				{System: "aarch64-darwin", Regex: regexp.MustCompile(`camsnap-macos-arm64\.tar\.gz`)},
+				{System: "aarch64-darwin", Regex: regexp.MustCompile(`camsnap(?:_[0-9.]+_darwin_arm64|-macos-arm64)\.tar\.gz`)},
 				{System: "x86_64-linux", Regex: regexp.MustCompile(`camsnap_[0-9.]+_linux_amd64\.tar\.gz`)},
 				{System: "aarch64-linux", Regex: regexp.MustCompile(`camsnap_[0-9.]+_linux_arm64\.tar\.gz`)},
 			},
