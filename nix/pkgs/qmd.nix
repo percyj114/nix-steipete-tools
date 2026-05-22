@@ -15,18 +15,18 @@
 
 let
   pname = "qmd";
-  version = "2.1.0";
+  version = "2.5.1";
 
   src = fetchFromGitHub {
     owner = "tobi";
     repo = "qmd";
     rev = "v${version}";
-    hash = "sha256-bqIVaNRTa8H5vrw3RwsD7QdtTa0xNvRuEVzlzE1hIBQ=";
+    hash = "sha256-OXRv/fW/oZ/WF8i9PRy1vbwdrOB2UWiDfzgpPn5BCKU=";
   };
 
   nodeModulesHashes = {
-    "aarch64-darwin" = "sha256-qU+9KdR/nTocelyANS09I/4yaQ+7s1LvJNqB27IOK/c=";
-    "x86_64-linux" = "sha256-D0ezO4vqq4iswcAMU2DCql9ZAQvh3me6N9aDB5roq4w=";
+    "aarch64-darwin" = "sha256-gDyJ5boyH44SeXlKo+W4G36GSUejyXP5PFvW+dFS1Mk=";
+    "x86_64-linux" = "sha256-sVXoNWIcx1RYRtRWB4F2j7x8/cabFBKq+plFhPU7tBc=";
   };
 
   system = stdenv.hostPlatform.system;

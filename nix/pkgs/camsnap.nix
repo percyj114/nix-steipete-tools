@@ -3,22 +3,22 @@
 let
   sources = {
     "aarch64-darwin" = {
-      url = "https://github.com/steipete/camsnap/releases/download/v0.2.0/camsnap-macos-arm64.tar.gz";
-      hash = "sha256-YSgnkN9HuSPbYC0ioR95blkUfcHEye6aQSW7lqKzgz4=";
+      url = "https://github.com/steipete/camsnap/releases/download/v0.2.1/camsnap_0.2.1_darwin_arm64.tar.gz";
+      hash = "sha256-GAhT2CvjRZ4887L+aKXXJmg4icawNfugtcJXHp+882E=";
     };
     "x86_64-linux" = {
-      url = "https://github.com/steipete/camsnap/releases/download/v0.2.0/camsnap_0.2.0_linux_amd64.tar.gz";
-      hash = "sha256-3UCuaKFaf9i3ohEBjzKkyiY7Aw4GlG5Bj+58gmdTMds=";
+      url = "https://github.com/steipete/camsnap/releases/download/v0.2.1/camsnap_0.2.1_linux_amd64.tar.gz";
+      hash = "sha256-viDkmnWdON+sNCGBB6ah3ZlIJ0TvCwuy2PuoZGi/2YI=";
     };
     "aarch64-linux" = {
-      url = "https://github.com/steipete/camsnap/releases/download/v0.2.0/camsnap_0.2.0_linux_arm64.tar.gz";
-      hash = "sha256-hOcMkScldSUwj23to75jSyVr6gqojx6o0cJeN8j0ALA=";
+      url = "https://github.com/steipete/camsnap/releases/download/v0.2.1/camsnap_0.2.1_linux_arm64.tar.gz";
+      hash = "sha256-T6WeztkiiNtBlGpiBduJzpa18veENJY87cqvd/5MH4g=";
     };
   };
 in
 stdenv.mkDerivation {
   pname = "camsnap";
-  version = "0.2.0";
+  version = "0.2.1";
 
   src = fetchurl sources.${stdenv.hostPlatform.system};
 
