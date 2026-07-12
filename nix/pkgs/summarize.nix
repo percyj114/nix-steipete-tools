@@ -64,11 +64,10 @@ if stdenv.isLinux then
       zstd
     ];
 
-    # auditTmpdir classifies every vendored JS file before checking native
-    # artifacts. Keep normal fixups, but skip that scan before Garnix times out.
-    noAuditTmpdir = true;
-
     env = {
+      # auditTmpdir classifies every vendored JS file before checking native
+      # artifacts. Export the shell hook gate while preserving normal fixups.
+      noAuditTmpdir = "1";
       PNPM_IGNORE_PACKAGE_MANAGER_CHECK = "1";
       CI = "1";
       HOME = "/tmp";
