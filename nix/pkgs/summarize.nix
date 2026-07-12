@@ -64,10 +64,13 @@ if stdenv.isLinux then
       zstd
     ];
 
+    # These ELF-oriented hooks shell-classify every vendored JS/source-map
+    # file in libexec. The Node package does not need their binary mutations.
+    dontPatchELF = true;
+    dontStrip = true;
+    noAuditTmpdir = true;
+
     env = {
-      # auditTmpdir classifies every vendored JS file before checking native
-      # artifacts. Export the shell hook gate while preserving normal fixups.
-      noAuditTmpdir = "1";
       PNPM_IGNORE_PACKAGE_MANAGER_CHECK = "1";
       CI = "1";
       HOME = "/tmp";
