@@ -3,14 +3,14 @@
 let
   sources = {
     "aarch64-darwin" = {
-      url = "https://github.com/openclaw/Peekaboo/releases/download/v3.9.1/peekaboo-macos-universal.tar.gz";
-      hash = "sha256-tQGDW7TmAkV/cgvNUsOHf5kvjpZsWBCOmpfKRrlzr1c=";
+      url = "https://github.com/openclaw/Peekaboo/releases/download/v3.9.2/peekaboo-macos-universal.tar.gz";
+      hash = "sha256-fefPjvGb7ihWVjSS0Y5bXU7k3Cnx+rCx66/iQLP1udM=";
     };
   };
 in
 stdenv.mkDerivation {
   pname = "peekaboo";
-  version = "3.9.1";
+  version = "3.9.2";
 
   src = fetchurl sources.${stdenv.hostPlatform.system};
 
