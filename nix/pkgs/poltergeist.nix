@@ -3,14 +3,14 @@
 let
   sources = {
     "aarch64-darwin" = {
-      url = "https://github.com/steipete/poltergeist/releases/download/v2.1.9/poltergeist-macos-universal-v2.1.9.tar.gz";
-      hash = "sha256-mnFhnMIXP3Z8EciTboDOOhZUaqruEjyN2LUkahIaOYg=";
+      url = "https://github.com/steipete/poltergeist/releases/download/v2.1.10/poltergeist-macos-universal-v2.1.10.tar.gz";
+      hash = "sha256-/ijteFyP3Guv6Ag8Fzec+egl2orTUtZQrefAIKwxZBc=";
     };
   };
 in
 stdenv.mkDerivation {
   pname = "poltergeist";
-  version = "2.1.9";
+  version = "2.1.10";
 
   src = fetchurl sources.${stdenv.hostPlatform.system};
 
