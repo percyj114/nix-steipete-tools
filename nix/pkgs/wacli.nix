@@ -3,22 +3,22 @@
 let
   sources = {
     "aarch64-darwin" = {
-      url = "https://github.com/openclaw/wacli/releases/download/v0.23.0/wacli_0.23.0_darwin_arm64.tar.gz";
-      hash = "sha256-0rZnsa1dszkT6K5j9FvphLxf7jefuOZfaM9VtvrVCmI=";
+      url = "https://github.com/openclaw/wacli/releases/download/v0.24.0/wacli_0.24.0_darwin_arm64.tar.gz";
+      hash = "sha256-1HQWsbZ/rHr5WT+aVvHMpvN36ksEhqh2bbuA8Qz9728=";
     };
     "x86_64-linux" = {
-      url = "https://github.com/openclaw/wacli/releases/download/v0.23.0/wacli_0.23.0_linux_amd64.tar.gz";
-      hash = "sha256-XGuSF0GrGZEPtrlYya+adOmeOF2sjCc7Ac0RWDWar4s=";
+      url = "https://github.com/openclaw/wacli/releases/download/v0.24.0/wacli_0.24.0_linux_amd64.tar.gz";
+      hash = "sha256-TKXGaNQfaLrRi/EueWarp8GzzGrjL9jhRd65h93RGS0=";
     };
     "aarch64-linux" = {
-      url = "https://github.com/openclaw/wacli/releases/download/v0.23.0/wacli_0.23.0_linux_arm64.tar.gz";
-      hash = "sha256-KFKuruNeNo9mLYPLPBW5PaDenbIcrm4nQRW0XmyCMl8=";
+      url = "https://github.com/openclaw/wacli/releases/download/v0.24.0/wacli_0.24.0_linux_arm64.tar.gz";
+      hash = "sha256-bg+1RHPesPuHgjk88fIfDB47szAbNlHNnZp3tjePDgc=";
     };
   };
 in
 stdenv.mkDerivation {
   pname = "wacli";
-  version = "0.23.0";
+  version = "0.24.0";
 
   # Upstream builds ./cmd/wacli with Go 1.27+, CGO_ENABLED=1 and sqlite_fts5.
   src = fetchurl sources.${stdenv.hostPlatform.system};
